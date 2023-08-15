@@ -1,0 +1,39 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import find_peaks
+
+# Simulated radar data along a straight track
+num_samples = 1024
+num_chirps = 128
+track_radar_data = np.zeros((num_samples, num_chirps))
+
+# Generate a simple track reflection pattern
+track_start = 400  # Starting range bin for track pattern
+track_end = 600    # Ending range bin for track pattern
+track_radar_data[track_start:track_end, :] = 0.5
+
+# Add noise to the radar data
+track_radar_data += 0.1 * np.random.randn(num_samples, num_chirps)
+
+# Range-Doppler Processing (similar to previous example)
+range_fft = np.fft.fft(track_radar_data, axis=0)
+doppler_fft = np.fft.fft(range_fft, axis=1)
+
+# Calculate magnitude of Doppler FFT
+doppler_magnitude = np.abs(doppler_fft)
+
+# Thresholding to identify peaks
+threshold = 0.3  # Adjust as needed
+detection_map = doppler_magnitude > threshold
+
+# Find peak locations using peak detection
+peak_indices, _ = find_peaks(detection_map, axis=1)
+
+# Display detected track segments
+plt.imshow(detection_map.T, extent=[0, num_samples, 0, num_chirps], origin='lower', aspect='auto', cmap='binary')
+plt.plot(peak_indices, np.arange(num_chirps), 'ro', label='Detected Peaks')
+plt.xlabel('Range Bin')
+plt.ylabel('Doppler Bin')
+plt.title('Detected Track Segments')
+plt.legend()
+plt.show()
