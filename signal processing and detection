@@ -1,0 +1,34 @@
+import numpy as np
+
+# Simulated radar data
+num_samples = 1024
+num_chirps = 128
+radar_data = np.random.rand(num_samples, num_chirps)  # Replace with actual radar data
+
+# Parameters
+c = 3e8  # Speed of light (m/s)
+fc = 77e9  # Carrier frequency (Hz)
+range_res = c / (2 * num_samples)  # Range resolution (m)
+doppler_res = c / (2 * fc * num_chirps)  # Doppler resolution (Hz)
+
+# Range-Doppler Processing
+range_fft = np.fft.fft(radar_data, axis=0)
+doppler_fft = np.fft.fft(range_fft, axis=1)
+
+# Thresholding for detection
+threshold = 0.1  # Adjust as needed
+detection_map = np.abs(doppler_fft) > threshold
+
+# Convert indices to actual range and velocity values
+range_bins = np.arange(num_samples) * range_res
+doppler_bins = np.arange(num_chirps) * doppler_res - num_chirps * doppler_res / 2
+
+# Extract detected targets
+detected_targets = np.transpose(np.where(detection_map))
+
+# Print detected targets (range, velocity)
+for target in detected_targets:
+    range_idx, doppler_idx = target
+    detected_range = range_bins[range_idx]
+    detected_velocity = doppler_bins[doppler_idx]
+    print(f"Detected target at Range: {detected_range:.2f} meters, Velocity: {detected_velocity:.2f} m/s")
