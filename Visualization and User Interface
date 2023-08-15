@@ -1,0 +1,26 @@
+import tkinter as tk
+
+class RadarGUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Radar GUI")
+        self.root.geometry("800x600")
+
+        self.radar_display = tk.Canvas(self.root, bg="black", width=800, height=600)
+        self.radar_display.pack()
+
+        self.draw_radar_data()
+
+    def draw_radar_data(self):
+        self.radar_display.delete("all")
+        # Draw radar data or detected targets as points or shapes here
+        # For simplicity, let's just draw a few random points
+        for _ in range(10):
+            x = int(self.radar_display.winfo_reqwidth() * 0.9 * (0.1 + 0.8 * random()))
+            y = int(self.radar_display.winfo_reqheight() * 0.9 * (0.1 + 0.8 * random()))
+            self.radar_display.create_rectangle(x, y, x + 5, y + 5, fill="green")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = RadarGUI(root)
+    root.mainloop()
